@@ -87,7 +87,7 @@ public class BoardView1
     private long lastIdle;
 
     private TilesetManager tileManager = new TilesetManager(this);
-
+    
     // polygons for a few things
     private Polygon              hexPoly;
     private Polygon[]            facingPolys;
@@ -103,11 +103,13 @@ public class BoardView1
         this.game = game;
         this.frame = frame;
 
-        game.board.addBoardListener(this);
+        game.getBoard().addBoardListener(this);
         scroller.start();
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
+
+        updateBoardSize();
 
         // tooltip
         tipWindow = new Window(frame);
@@ -136,11 +138,10 @@ public class BoardView1
         offset.setLocation(getOptimalOffset(size));
 
         if (!this.isTileImagesLoaded()) {
+            g.drawString("loading images...", 20, 50);
             if (!tileManager.isStarted()) {
-                g.drawString("loading images...", 20, 50);
                 System.out.println("boardview1: load all images called");
-                tileManager.loadAllImages(game);
-                return;
+                tileManager.loadNeededImages(game);
             }
             return;
         }
@@ -195,6 +196,15 @@ public class BoardView1
 
 //        final long finish = System.currentTimeMillis();
 //        System.out.println("BoardView1: updated screen in " + (finish - start) + " ms.");
+    }
+
+    /**
+     * Updates the boardSize variable with the proper values for this board.
+     */
+    private void updateBoardSize() {
+        int width = game.getBoard().width * 63 + 21;
+        int height = game.getBoard().height * 72 + 36;
+        boardSize = new Dimension(width, height);
     }
 
     /**
@@ -940,14 +950,14 @@ public class BoardView1
         moveCursor(highlightSprite, b.getCoords());
     }
     public void boardChangedHex(BoardEvent b) {
+        tileManager.waitForHex( game.getBoard().getHex(b.getCoords()) );
         if (boardGraph != null) {
             boardGraph.setClip(0, 0, boardRect.width, boardRect.height);
             redrawAround(b.getCoords());
         }
     }
     public void boardNewBoard(BoardEvent b) {
-        boardSize = new Dimension(game.board.width * 63 + 21,
-                                  game.board.height * 72 + 36);
+        updateBoardSize();
         backGraph = null;
         backImage = null;
         backSize = null;
@@ -1471,17 +1481,17 @@ public class BoardView1
                 graph.drawPolygon(facingPolys[entity.getFacing()]);
             }
 
-            // draw the 'flip arms' arrow
-            if ( (entity.getFacing() != -1) && entity.getArmsFlipped() ) {
-              graph.setColor(Color.red);
-              int flipDir = entity.getFacing();
-
-              if ( flipDir < 3 )
-                flipDir = flipDir + 3;
-              else
-                flipDir = flipDir - 3;
-
-              graph.drawPolygon(facingPolys[flipDir]);
+            // determine secondary facing for non-mechs & flipped arms
+            int secFacing = entity.getFacing();
+            if (!(entity instanceof Mech)) {
+                secFacing = entity.getSecondaryFacing();
+            } else if (entity.getArmsFlipped()) {
+                secFacing = (entity.getFacing() + 3) % 6;
+            }
+            // draw red secondary facing arrow if necessary
+            if (secFacing != -1 && secFacing != entity.getFacing()) {
+                graph.setColor(Color.red);
+                graph.drawPolygon(facingPolys[secFacing]);
             }
 
             // draw condition strings
@@ -1613,7 +1623,11 @@ public class BoardView1
             // set color
             switch (step.getMovementType()) {
             case Entity.MOVE_RUN :
-                col = Settings.moveRunColor;
+                if (step.isUsingMASC()) {
+                    col = Settings.moveMASCColor;
+                } else {
+                    col = Settings.moveRunColor;
+                }
                 break;
             case Entity.MOVE_JUMP :
                 col = Settings.moveJumpColor;
@@ -1624,9 +1638,6 @@ public class BoardView1
             default :
                 col = Settings.moveDefaultColor;
                 break;
-            }
-            if (step.isUsingMASC()) {
-                col = Settings.moveMASCColor;
             }
 
             // draw arrows and cost for the step
@@ -2101,4 +2112,5 @@ public class BoardView1
     public boolean isTileImagesLoaded() {
         return this.tileManager.isLoaded();
     }
+
 }
