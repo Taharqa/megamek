@@ -265,6 +265,7 @@ public abstract class Mech
             if (m.isPendingDump()) {
                 m.setPendingDump(false);
                 m.setDumping(true);
+                reloadEmptyWeapons();
             }
             else if (m.isDumping()) {
                 m.setDumping(false);
@@ -293,6 +294,18 @@ public abstract class Mech
         
         return destroyed;
                 }
+
+    /**
+     * Returns true if the entity has a hip crit.
+     */
+    public boolean hasHipCrit() {
+        for ( int loc = 0; loc < NUM_MECH_LOCATIONS; loc++ ) {
+            if ( legHasHipCrit( loc ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Return true is the location is a leg and has a hip crit
