@@ -339,9 +339,26 @@ public class Game implements Serializable
     public Vector getOutOfGameEntitiesVector() {
         return vOutOfGame;
     }
-    
+
+    /**
+     * Swap out the current list of dead (or fled) units for a new one.
+     *
+     * @param   vOutOfGame - the new <code>Vector</code> of dead or fled units.
+     *          This value should <em>not</em> be <code>null</code>.
+     * @throws  <code>IllegalArgumentException</code> if the new list is
+     *          <code>null</code>.
+     */
     public void setOutOfGameEntitiesVector(Vector vOutOfGame) {
+        if ( null == vOutOfGame ) {
+            throw new IllegalArgumentException
+                ( "New out-of-game list is null." );
+        }
         this.vOutOfGame = vOutOfGame;
+        // Add these entities to the game.
+        for (Enumeration i = vOutOfGame.elements(); i.hasMoreElements();) {
+            final Entity entity = (Entity)i.nextElement();
+            entity.setGame(this);
+        }
     }
 
     /**
@@ -552,11 +569,13 @@ public class Game implements Serializable
      */
     private void reindexEntities() {
         entityIds.clear();
-        for (Enumeration i = entities.elements(); i.hasMoreElements();) {
-            final Entity entity = (Entity)i.nextElement();
-            entityIds.put(new Integer(entity.getId()), entity);
-            // may as well set this here as well
-            entity.setGame(this);
+        if ( entities != null ) {
+            // Add these entities to the game.
+            for (Enumeration i = entities.elements(); i.hasMoreElements();) {
+                final Entity entity = (Entity)i.nextElement();
+                entityIds.put(new Integer(entity.getId()), entity);
+                entity.setGame(this);
+            }
         }
     }
     

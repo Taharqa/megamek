@@ -217,6 +217,7 @@ public class WeaponType extends EquipmentType {
         // Start BattleArmor weapons
         EquipmentType.addType( createBAMG() );
         EquipmentType.addType( createBASingleMG() );
+        EquipmentType.addType( createBASingleFlamer());
         EquipmentType.addType( createBAFlamer() );
         EquipmentType.addType( createBASmallLaser() );
         EquipmentType.addType( createBACLERSmallLaser() );
@@ -1364,7 +1365,7 @@ public class WeaponType extends EquipmentType {
         weapon.internalName = "ISNarcBeacon";
         weapon.mepName = "IS Narc Beacon";
         weapon.mtfName = weapon.internalName;
-        weapon.tdbName = "IS Narc Missle Beacon";
+        weapon.tdbName = "IS Narc Missile Beacon";
         weapon.heat = 0;
         weapon.rackSize = 1;
         weapon.ammoType = AmmoType.T_NARC;
@@ -2528,7 +2529,7 @@ public class WeaponType extends EquipmentType {
         weapon.internalName = "CLNarcBeacon";
         weapon.mepName = "Clan Narc Beacon";
         weapon.mtfName = weapon.internalName;
-        weapon.tdbName = "Clan Narc Missle Beacon";
+        weapon.tdbName = "Clan Narc Missile Beacon";
         weapon.heat = 0;
         weapon.rackSize = 1;
         weapon.ammoType = AmmoType.T_NARC;
@@ -2662,6 +2663,29 @@ public class WeaponType extends EquipmentType {
 
         return weapon;
     }
+
+    public static WeaponType createBASingleFlamer() {
+        WeaponType weapon = new WeaponType();
+
+        weapon.name = "Flamer";
+        weapon.internalName = "ISBASingleFlamer";
+        weapon.mepName = "IS BA-Single Flamer";
+        weapon.mtfName = "ISBASingleFlamer";
+        weapon.tdbName = "IS BA-Single Flamer";
+        weapon.heat = 3;
+        weapon.damage = 2;
+        weapon.ammoType = AmmoType.T_NA;
+        weapon.minimumRange = WEAPON_NA;
+        weapon.shortRange = 1;
+        weapon.mediumRange = 2;
+        weapon.longRange = 3;
+        weapon.tonnage = 0.0f;
+        weapon.criticals = 0;
+        weapon.flags |= F_DIRECT_FIRE | F_FLAMER;
+        weapon.bv = 0;
+
+        return weapon;
+    }
     public static WeaponType createBAFlamer() {
         WeaponType weapon = new WeaponType();
 
@@ -2682,8 +2706,11 @@ public class WeaponType extends EquipmentType {
         weapon.criticals = 0;
         weapon.bv = 0;
         weapon.flags |= F_DIRECT_FIRE | F_BATTLEARMOR | F_FLAMER;
-        String[] modes = { "Damage", "Heat" };
-        weapon.setModes(modes);
+        // In www.classicbattletech.com/PDF/AskPMForumArchiveandFAQ.pdf,
+        // pg. 23, Randall Bills says "No" to flamer-equipped infantry
+        // doing heat instead of damage.
+        // Randal then clarified "infantry" to include "BattleArmor" in
+        // http://www.classicbattletech.com/w3t/showflat.php?Cat=&Board=ask&Number=646499&page=&view=&sb=&o=&vc=1
 
         return weapon;
     }
@@ -2776,8 +2803,11 @@ public class WeaponType extends EquipmentType {
         weapon.criticals = 0;
         weapon.bv = 0;
         weapon.flags |= F_DIRECT_FIRE | F_BATTLEARMOR | F_FLAMER | F_DOUBLE_HITS;
-        String[] modes = { "Damage", "Heat" };
-        weapon.setModes(modes);
+        // In www.classicbattletech.com/PDF/AskPMForumArchiveandFAQ.pdf,
+        // pg. 23, Randall Bills says "No" to flamer-equipped infantry
+        // doing heat instead of damage.
+        // Randal then clarified "infantry" to include "BattleArmor" in
+        // http://www.classicbattletech.com/w3t/showflat.php?Cat=&Board=ask&Number=646499&page=&view=&sb=&o=&vc=1
 
         return weapon;
     }
