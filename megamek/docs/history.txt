@@ -113,7 +113,23 @@ FUTURE VERSION PLANS:
 
 VERSION HISTORY:
 ----------------
-v 0.29.0.1 (CVS)
+v 0.29-stable-2 (CVS)
++ Bug 763169: Dropping prone now has chance to dislodge swarmers.
++ Bug 756126 (possible): Only needed hex images loaded during board load
++ Bug 769106: Fixed bug that was messing up "go prone to dislodge swarmers."
++ Data 762795: Added BH-21's Avatar image.
++ Data 764066: Added BH-21's updated images.
++ Data 769828: Swapped Perseus' & Yeoman's images.
++ Bug 764704: Inferno SRM-2's can still target woods for ignition.
++ Bug 773000: Tank hit locations
++ Bug 773001: Tank locations on armor diagram
++ Updated FiringDisplay#findClub() from mainline.
++ Updated TargetRoll.java from mainline.
++ Bug 759032: fixed NPE in MovementDisplay
++ Bug 776522: Meks missing a leg should have a run MP of 1, not 2.
++ Bug 755001: Passengers with ECM should still affect enemy electronics.
+
+v 0.29.1 (06-27-03, 11am)
 + Bug 760509: apply case-insensitive comparisons to default images, too.
 
 v 0.29.0 (06-25-03, 12am)

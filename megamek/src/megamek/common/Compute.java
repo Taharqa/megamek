@@ -1385,6 +1385,11 @@ public class Compute
         final Mounted ammo = usesAmmo ? weapon.getLinked() : null;
         final AmmoType atype = ammo == null ? null : (AmmoType)ammo.getType();
         final boolean targetInBuilding = isInBuilding( game, te );
+        boolean isInferno =
+            ( atype != null &&
+              atype.getMunitionType() == AmmoType.M_INFERNO ) ||
+            ( isWeaponInfantry &&
+              wtype.hasFlag(WeaponType.F_INFERNO) );
         
         ToHitData toHit = null;
         
@@ -1435,18 +1440,13 @@ public class Compute
         }
 
         // Some weapons can't cause fires.
-        if ( wtype.hasFlag(WeaponType.F_NO_FIRES) &&
+        if ( wtype.hasFlag(WeaponType.F_NO_FIRES) && !isInferno &&
              Targetable.TYPE_HEX_IGNITE == target.getTargetType() ) {
             return new ToHitData(ToHitData.IMPOSSIBLE, "Weapon can not cause fires.");
         }
 
         // Can't target infantry with Inferno rounds (BMRr, pg. 141).
-        if ( te instanceof Infantry &&
-             ( ( atype != null &&
-                 atype.getMunitionType() == AmmoType.M_INFERNO ) ||
-               ( isWeaponInfantry &&
-                 wtype.hasFlag(WeaponType.F_INFERNO) )
-               ) ) {
+        if ( te instanceof Infantry && isInferno ) {
             return new ToHitData( ToHitData.IMPOSSIBLE,
                   "Can not target infantry with Inferno rounds." );
         }
@@ -4606,10 +4606,23 @@ public class Compute
         Vector vECMRanges = new Vector(16);
         for (Enumeration e = ae.game.getEntities(); e.hasMoreElements(); ) {
             Entity ent = (Entity)e.nextElement();
-            if (ent.isEnemyOf(ae) && ent.hasActiveECM() && ent.getPosition() != null) {
+            Coords entPos = ent.getPosition();
+            if (ent.isEnemyOf(ae) && ent.hasActiveECM() && entPos != null) {
                 // TODO : only use the best ECM range in a given Coords.
-                vEnemyCoords.addElement(ent.getPosition());
+                vEnemyCoords.addElement( entPos );
                 vECMRanges.addElement( new Integer(ent.getECMRange()) );
+            }
+
+            // Check the ECM effects of the entity's passengers.
+            Vector passengers = ent.getLoadedUnits();
+            Enumeration iter = passengers.elements();
+            while ( iter.hasMoreElements() ) {
+                Entity other = (Entity) iter.nextElement();
+                if (other.isEnemyOf(ae) && other.hasActiveECM() && entPos != null) {
+                    // TODO : only use the best ECM range in a given Coords.
+                    vEnemyCoords.addElement( entPos );
+                    vECMRanges.addElement( new Integer(other.getECMRange()) );
+                }
             }
         }
         
