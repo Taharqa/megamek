@@ -115,7 +115,18 @@ public class QuadMech extends Mech
         return getWalkMP();
       }
     }
-  
+
+    /**
+     * Returns run MP without considering MASC modified for leg loss & stuff.
+     */
+    public int getRunMPwithoutMASC() {
+        if ( countDestroyedLegs() <= 1 ) {
+            return super.getRunMPwithoutMASC();
+        } else {
+            return getWalkMP();
+        }
+    }
+
     public boolean canChangeSecondaryFacing() {
       return false;
     }
