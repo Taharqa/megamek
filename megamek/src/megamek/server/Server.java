@@ -1,5 +1,5 @@
 /*
- * MegaMek - Copyright (C) 2000-2002 Ben Mazur (bmazur@sev.org)
+ * MegaMek - Copyright (C) 2000-2003 Ben Mazur (bmazur@sev.org)
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the Free
@@ -127,9 +127,7 @@ implements Runnable {
         // reattach the transient fields and ghost the players
         for (Enumeration e = game.getEntities(); e.hasMoreElements(); ) {
             Entity ent = (Entity)e.nextElement();
-            ent.setOwner(game.getPlayer(ent.getOwnerId()));
             ent.setGame(game);
-            ent.restore();
         }
         
         for (Enumeration e = game.getPlayers(); e.hasMoreElements(); ) {
@@ -137,11 +135,6 @@ implements Runnable {
             p.setGame(game);
             p.setGhost(true);
         }
-
-        // Re-initialize the game's board.
-        // TODO: have megamek.common.Board's de-serialization
-        //       reconstruct the transient bldgByCoords instead.
-        game.board.newData( game.board );
 
         //HACK
         roundReport = game.getRoundReport();
@@ -1005,6 +998,8 @@ implements Runnable {
                 break;
             case Game.PHASE_VICTORY :
                 prepareVictoryReport();
+                log.append( "\n" );
+                log.append( roundReport.toString() );
                 send(createFullEntitiesPacket());
                 send(createReportPacket());
                 send(createEndOfGamePacket());
@@ -2083,6 +2078,7 @@ implements Runnable {
         Hex prevHex = null;
         final boolean isInfantry = (entity instanceof Infantry);
         AttackAction charge = null;
+        PilotingRollData rollTarget;
         
         // Compile the move
         Compute.compile(game, entity.getId(), md);
@@ -2821,10 +2817,27 @@ implements Runnable {
             // dropping prone intentionally?
             if (step.getType() == MovementData.STEP_GO_PRONE) {
                 mpUsed = step.getMpUsed();
-                entity.setProne(true);
-                // check to see if we washed off infernos
-                checkForWashedInfernos(entity, curPos);
-                break;
+                rollTarget = entity.checkDislodgeSwarmers();
+                if (rollTarget.getValue() == TargetRoll.CHECK_FALSE) {
+                    // Not being swarmed
+                    entity.setProne(true);
+                    // check to see if we washed off infernos
+                    checkForWashedInfernos(entity, curPos);
+                    break;
+                } else {
+                    // Being swarmed
+                    entity.setPosition(curPos);
+                    if (doDislodgeSwarmerSkillCheck(entity, rollTarget, curPos)) {
+                        // Entity falls
+                        curFacing = entity.getFacing();
+                        curPos = entity.getPosition();
+                        fellDuringMovement = true;
+                        // BUG 768425: preliminary fix, replace me.
+                        // check to see if we washed off infernos
+                        checkForWashedInfernos(entity, curPos);
+                        break;
+                    }
+                }
             }
             
             // update lastPos, prevStep, prevFacing & prevHex
@@ -3073,7 +3086,6 @@ implements Runnable {
         if (! (entity instanceof Mech) || entity.isProne()) {
             return;
         }
-        
         if (gettingUp && !entity.needsRollToStand() && (entity.getDestroyedCriticals(CriticalSlot.TYPE_SYSTEM, Mech.SYSTEM_GYRO,Mech.LOC_CT) < 2)) {
             phaseReport.append("\n" ).append( entity.getDisplayName() ).append( " does not need to make "
             ).append( "a piloting skill check to stand up because it has all four of its legs.");
@@ -3101,7 +3113,27 @@ implements Runnable {
         }
         
     }
-    
+
+    private boolean doDislodgeSwarmerSkillCheck(Entity entity, PilotingRollData roll, Coords curPos) {
+        // okay, print the info
+        phaseReport.append("\n" ).append( entity.getDisplayName() )
+            .append( " must make a piloting skill check (" )
+            .append( roll.getLastPlainDesc() ).append( ")" ).append( ".\n");
+        // roll
+        final int diceRoll = Compute.d6(2);
+        phaseReport.append("Needs " ).append( roll.getValueAsString()
+        ).append( " [" ).append( roll.getDesc() ).append( "]"
+        ).append( ", rolls " ).append( diceRoll ).append( " : ");
+        if ( diceRoll < roll.getValue() ) {
+            phaseReport.append("fails.\n");
+            return false;
+        } else {
+            phaseReport.append("succeeds.\n");
+            doEntityFallsInto(entity, curPos, curPos, roll);
+            return true;
+        }
+    }
+
     /**
      * Do a piloting skill check for a Mech while it is moving.
      * Failing this roll will cause the Mech to fall.
@@ -3146,7 +3178,7 @@ implements Runnable {
                                              PilotingRollData reason,
                                              boolean isFallRoll ) {
         boolean result = true;
-        
+
         final PilotingRollData roll =
             Compute.getBasePilotingRoll(game, entity.getId());
         boolean fallsInPlace;
@@ -3243,6 +3275,11 @@ implements Runnable {
         // hmmm... somebody there... problems.
         if (fallElevation >= 2) {
             // accidental death from above
+            // TODO : code me!!!
+            System.err.println( "MegaMek should perform an accidental DFA for "
+                                + entity.getShortName() +
+                                " to land on " + violation.getShortName()
+                                + " but it doesn't.  We're working on it." );
         } else {
             // damage as normal
             doEntityFall(entity, dest, fallElevation, roll);
@@ -4051,9 +4088,15 @@ implements Runnable {
         // do we hit?
         boolean bMissed = false;
         if (wr.roll < toHit.getValue()) {
-            // miss
+            // Report the miss.
             bMissed = true;
-            phaseReport.append("misses.\n"); 
+            if ( wtype.getAmmoType() == AmmoType.T_SRM_STREAK ) {
+                phaseReport.append( "fails to achieve lock.\n" );
+            } else {
+                phaseReport.append("misses.\n"); 
+            }
+
+            // Report any AMS action.
             if (wr.amsShotDown > 0) {
                 phaseReport.append( "\tAMS activates, firing " )
                     .append( wr.amsShotDown )
@@ -6113,10 +6156,11 @@ implements Runnable {
                     damageCrew(entity, 1);
                 }
                 // The pilot may have just expired.
-                if ( entity.crew.isDead() ) {
+                if ( entity.crew.isDead() || entity.crew.isDoomed() ) {
                     roundReport.append( "*** " )
                         .append( entity.getDisplayName() )
-                        .append( " PILOT BAKES TO DEATH! ***" );
+                        .append( " PILOT BAKES TO DEATH! ***" )
+                        .append( destroyEntity(entity, "crew death", true) );
                 }
             }
 
@@ -6301,7 +6345,6 @@ implements Runnable {
                 en.crew.setRollsNeeded(en.crew.getRollsNeeded() + damage);
             } else {
                 en.crew.setDoomed(true);
-                en.crew.setRollsNeeded(0);
                 s += "\n*** " + en.getDisplayName() + " PILOT KILLED! ***";
             }
         }
@@ -7652,9 +7695,6 @@ implements Runnable {
      */
     private void receiveEntityAdd(Packet c, int connIndex) {
         Entity entity = (Entity)c.getObject(0);
-        
-        entity.restore();
-        entity.setOwner(getPlayer(connIndex));
 
         // Only assign an entity ID when the client hasn't.
         if ( Entity.NONE == entity.getId() ) { 
@@ -7673,8 +7713,6 @@ implements Runnable {
         Entity entity = (Entity)c.getObject(0);
         Entity oldEntity = game.getEntity(entity.getId());
         if (oldEntity != null && oldEntity.getOwner() == getPlayer(connIndex)) {
-            entity.restore();
-            entity.setOwner(getPlayer(connIndex));
             game.setEntity(entity.getId(), entity);
             
             send(createEntitiesPacket());
