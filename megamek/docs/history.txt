@@ -113,7 +113,39 @@ FUTURE VERSION PLANS:
 
 VERSION HISTORY:
 ----------------
-v 0.29.0.1 (CVS)
+v 0.29-stable-4 (09-30-03, 4:30 pm)
++ Bug 802741: "check false" should *not* be added as a modifier.
++ Use the build.xml from thebohemian.
+
+v 0.29-stable-3 (08-27-03, 2:17 pm)
++ Bug 776023: Made "Warhammer IIC" the model for all clan whammys.
++ Bug 762509: Can't run or jump when unjamming a RAC.
++ Bug 793574: TDB uses the "Missile" spelling, not "Missle".
++ Bug 779344: Entity.ARMOR_DOOMED made human-readable in display
++ Bug 775122: fixed NPE which broke map editor load button
++ Bug 775472: wait for new hex images (like smoke) to load before drawing
++ Data 779006: Added BH-21's resized mech images
++ Vehicles now use red secondary arrow to indicate turret direction
++ Fixed bug where locked turrets wouldn't show a direction
++ Bug 760256: mechs dumping ammo try to reload weapons using that ammo
+
+v 0.29-stable-2 (07-28-03, 12:32 am)
++ Bug 763169: Dropping prone now has chance to dislodge swarmers.
++ Bug 756126 (possible): Only needed hex images loaded during board load
++ Bug 769106: Fixed bug that was messing up "go prone to dislodge swarmers."
++ Data 762795: Added BH-21's Avatar image.
++ Data 764066: Added BH-21's updated images.
++ Data 769828: Swapped Perseus' & Yeoman's images.
++ Bug 764704: Inferno SRM-2's can still target woods for ignition.
++ Bug 773000: Tank hit locations
++ Bug 773001: Tank locations on armor diagram
++ Updated FiringDisplay#findClub() from mainline.
++ Updated TargetRoll.java from mainline.
++ Bug 759032: fixed NPE in MovementDisplay
++ Bug 776522: Meks missing a leg should have a run MP of 1, not 2.
++ Bug 755001: Passengers with ECM should still affect enemy electronics.
+
+v 0.29.1 (06-27-03, 11am)
 + Bug 760509: apply case-insensitive comparisons to default images, too.
 
 v 0.29.0 (06-25-03, 12am)
