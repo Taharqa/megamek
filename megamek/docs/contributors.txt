@@ -1,7 +1,10 @@
-Lot of people have contributed to the MegaMek project.
+﻿Lot of people have contributed to the MegaMek project.
 
-  Original author and present maintainer:
+  Original author:
      Ben Mazur <bmazur@sev.org>
+     
+  Current maintainer:
+     Sebastian Brocks <beerockxs@users.sourceforge.net>
 
   AI Coding:
      Steven Hawkins <skh_mail@yahoo.com>
@@ -53,6 +56,7 @@ Lot of people have contributed to the MegaMek project.
      Klaus Mittag <khm19_de@users.sourceforge.net>
      Dirk Walter <dirkwalter@users.sourceforge.net>
      Daniel C. Lioi <firehawk77028@users.sourceforge.net>
+     Markus Mikkolainen <itmo@users.sourceforge.net>
 
   XML Parser:
      Tom Gibara (original URL: http://gibaradunn.srac.org/tiny/index.shtml)
@@ -63,6 +67,7 @@ Lot of people have contributed to the MegaMek project.
      shockmilk <shockmilk@users.sourceforge.net>
      Jan Ferdinand Rehse
      Thomas "DarkViper" Wehner
+     Kolja "Flashhawk" Geldmacher
      Endreffy Janos <endrosz@freemail.hu>
 
   German Readme:

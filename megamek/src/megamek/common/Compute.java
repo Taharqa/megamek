@@ -1749,7 +1749,6 @@ public class Compute {
             }
             
         } else {
-
             // Direct fire weapons (and LBX slug rounds) just do a single shot
             // so they don't use the missile hits table
             fDamage = wt.getDamage();
@@ -1757,11 +1756,10 @@ public class Compute {
                 if (wt.getAmmoType() == AmmoType.T_GAUSS_HEAVY){
                     fDamage = 25.0f;
                     int rtt = attacker.getPosition().distance(g.getEntity(waa.getTargetId()).getPosition());
-                    if (rtt > 6){
-                        fDamage = 20.0f;
-                    }
                     if (rtt > 13){
                         fDamage = 10.0f;
+                    } else if (rtt > 6) {
+                        fDamage = 20.0f;
                     }
                 }
             }            
@@ -2232,13 +2230,11 @@ public class Compute {
                 .getWeaponArc(weaponId));
     }
 
-    /*
-     * Returns true if the line between attacker and target goes through the hex
+    /**
+     * Returns true if the line between source Coords and target goes through the hex
      * in front of the attacker
      */
-    public static boolean isThroughFrontHex (IGame game, int attackerId, Entity t) {
-        Entity ae = game.getEntity(attackerId);
-        Coords src = ae.getPosition();
+    public static boolean isThroughFrontHex (IGame game, Coords src, Entity t) {
         Coords dest = t.getPosition();
         int fa = dest.degree(src) - t.getFacing()*60;
         if (fa<0) fa += 360;

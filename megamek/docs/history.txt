@@ -1,6 +1,50 @@
 ﻿VERSION HISTORY:
 ----------------
-v0.33.10-dev (SVN)
+v0.33.13-dev (SVN)
++ Fix lock when sending large packets
++ Patch 1830744: doubleblind improvement
+
+v0.33.12 (2007-11-09, GMT 22:21 GMT+2)
++ Corrected names of the Celestials
++ Tanks movement not getting adjusted for carried cargo
+   when not in extreme gravity
++ Patch 1830140: AWT/swing redrawworker improvement
++ Bug 1831073: B-Pods should explode upon crit
++ Major change to Swing GUI.  Four major issues remain:
+  a) the initial board paint won't display until a redraw is forced.
+  b) keyboard scroll and right click scroll have been disabled.
+  c) zooming does not work.
+  d) LOS Ruler has been disabled.
++ Synchronized AWT and Swing GUIs to current date (11/15/07)
+
+v0.33.11 (2007-11-09, 15:26 GMT+2)
++ Bug 1748167: Spot-and-fire penalty being applied to TAG/Semi-Guided
++ Updated equipment.txt
++ Automatically generate equipment.txt whenever ant is used to compile MM.
++ Fixed NPE in MiniMap when using the board editor
++ Bug 1817499: Falling on bridges not working right
++ Bug: Deploying on bridges now gives correct elevation
++ Bug: 1746114: 'Free' standard flamers on vehicles?
++ Bug 1806296: Vehicle critical hits problem
++ Bug 1806550: A-Pods can fire multiple times
++ Data 1787475: Tallassia Mapset with original Mapnames
++ Data 1801670: 3050U IS Mechfiles
++ Data 1794069: Missing Mechfiles
++ Data 1789446: Celestial Invictus Omnis
++ Bug 1714093: NPE in BrushOffAttackAction in certain situations, removed most Vectors from BoardView1
++ Bug 1678555: Illegal Number Format when an anticipated Game option input is empty, defaults to 0 now
++ Added the Celestial Dominus variants and some pics for them
++ Bug 1824240: Pilot has been picked up with 2 different units
++ Minor refactoring, yay Javadoc!
++ Fix BV bug for Mechs, explose equipment did not subtract correctly in most cases
++ Bug 1600957: Selected boards could be null (our placeholder for "surprise") which caused an NPE in some cases
++ Sometimes our target loses it's position, causing the display thread to throw an NPE
++ Bug 1587654: NPE resolving nuclear effects on offboard units
++ Patch 1827968: swing minimap and network improvements
++ More Celestial images
++ Updated build.xml to allow automatically built client releases
+
+v0.33.10 (2007-10-28, 16:13 GMT+1)
 + Implemented Retractable Blades. TODO: make them actually retractable (should be able
     to retract or extend at end of movement, no pushing/punching or carrying stuff when
     extended, no physical attack when retracted.
@@ -20,7 +64,19 @@ v0.33.10-dev (SVN)
 + Bug: Clear Hexes from heavy to light would reset TF
 + Enhancement Request from Mekwars forum: Draw markers on minimap for pre-designated
   artillery auto-hit hexes.
-  
++ Patch 1714216: BV checking command
++ Patch 1694672: Board/map size configuration
++ Patch 1804518, Bug 1788089, Bug 1813331: Heat and min range incorrect for HAG 30 and 40
++ Bug 1801922: Cannot charge after starting Movement Phase prone
++ Bug: Quad mule kicks should only be allowed to the rear arc, not the side arcs
++ Bug 1806055: C3 Master and Advanced Search
++ Bug: After reset, starting position got set to any, but UI still showed old starting position
++ Bug: when changing a game option that possibly changed BV (like force-size mod),
+   BV displayed in the chatlounge didn't change
++ Skidding Bug: Hex just entered counted for distance.
++ Bug 1751666: Made the option apply only to 'Mechs as per suggestion of initial submitter.
++ Enhancement: Show both base BV as well as BV modified by force modifier for each player.
+
 v0.33.9 (2007-09-02, 17:47 GMT+2)
 + NPE in SearchlightAttackAction.java
 + Changed Font.SANS_SERIF to "Sans Serif" in ChatLounge.java

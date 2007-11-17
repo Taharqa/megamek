@@ -47,7 +47,7 @@ import megamek.server.DedicatedServer;
  */
 public class MegaMek {
 
-    public static String VERSION = "0.33.10-dev"; //$NON-NLS-1$
+    public static String VERSION = "0.33.13-dev"; //$NON-NLS-1$
 
     public static long TIMESTAMP = new File(PreferenceManager.getClientPreferences().getLogDirectory() + File.separator + "timestamp").lastModified(); //$NON-NLS-1$
 
@@ -98,7 +98,7 @@ public class MegaMek {
                 if (interfaceName == null) {
                     interfaceName = PreferenceManager.getClientPreferences().getGUIName();
                 }
-                startGUI(interfaceName, restArgs);                
+                startGUI(interfaceName, restArgs);
             }
             
         } catch (CommandLineParser.ParseException e){
@@ -396,6 +396,7 @@ public class MegaMek {
             } else {
                 error("file name expected"); //$NON-NLS-1$                
             }
+            System.exit(0);
         }
 
         private void processUnitValidator() throws ParseException {

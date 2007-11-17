@@ -30,6 +30,7 @@ import java.io.StreamTokenizer;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Date;
 
 import megamek.common.event.BoardEvent;
 import megamek.common.event.BoardListener;
@@ -37,6 +38,8 @@ import megamek.common.event.BoardListener;
 import java.util.Hashtable;
 
 public class Board implements Serializable, IBoard {
+
+    private static final long serialVersionUID = -5744058872091016636L;
 
     public static final String  BOARD_REQUEST_ROTATION  = "rotate:";
 
@@ -239,7 +242,6 @@ public class Board implements Serializable, IBoard {
         } else {
             bldgByCoords.clear();
         }
-
         // Walk through the hexes, creating buildings.
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -326,7 +328,6 @@ public class Board implements Serializable, IBoard {
                 } // End hex-has-bridge                    
             }
         }
-
         // Initialize all exits.
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -554,7 +555,6 @@ public class Board implements Serializable, IBoard {
     public void load(InputStream is) {
         int nw = 0, nh = 0, di = 0;
         IHex[] nd = new IHex[0];
-        
         try {
             Reader r = new BufferedReader(new InputStreamReader(is));
             StreamTokenizer st = new StreamTokenizer(r);
@@ -614,6 +614,7 @@ public class Board implements Serializable, IBoard {
             System.err.println("i/o error reading board");
             System.err.println(ex);
         }
+        System.out.println("loading board,loaded, processing"+new Date());
         
         // fill nulls with blank hexes
         for (int i = 0; i < nd.length; i++) {
@@ -628,6 +629,7 @@ public class Board implements Serializable, IBoard {
         } else {
             System.err.println("board data invalid");
         }
+
     }
     
     private int indexFor(String hexNum, int width, int row) {
@@ -996,7 +998,6 @@ public class Board implements Serializable, IBoard {
 
         // Any basement reduces the hex's elevation.
         if ( curHex.containsTerrain(Terrains.BLDG_BASEMENT)) {
-System.out.println("Setting basement elevation: "+elevation+":"+curHex);
             elevation -= curHex.terrainLevel(Terrains.BLDG_BASEMENT);
             curHex.removeTerrain(Terrains.BLDG_BASEMENT);
             curHex.setElevation(elevation);

@@ -323,7 +323,7 @@ public class ClientGUI
         try {
             client.game.addGameListener(gameListener);
             // Create the board viewer.
-            bv = new BoardView1(client.game, frame, this);
+            bv = new BoardView1(client.game, frame);
 
             // Place the board viewer in a set of scrollbars.
             scroller = new Panel();
@@ -673,11 +673,6 @@ public class ClientGUI
         }
 
         client.die();        
-
-        //TODO Is there a better solution?
-        //This is required because the BoardView creates the redraw thread 
-        //that must be stopped explicitly 
-        bv.die();
         
         //TODO Is there a better solution?
         //This is required because the ChatLounge adds the listener to the

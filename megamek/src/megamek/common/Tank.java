@@ -105,7 +105,6 @@ public class Tank
         int j = getOriginalWalkMP();
         j = Math.max(0, j - getCargoMpReduction());
         if (gravity) j = applyGravityEffectsOnMP(j);
-        else j = getOriginalWalkMP();
         if (game != null) {
             i = game.getTemperatureDifference();
             return Math.max(j - i, 0);
@@ -481,7 +480,7 @@ public class Tank
                 }
                 break;
             case 12:
-                if (m_bHasNoTurret || bSide) {
+                if (m_bHasNoTurret) {
                     rv.setEffect(HitData.EFFECT_CRITICAL);
                 } else {
                     rv = new HitData(LOC_TURRET, false, HitData.EFFECT_CRITICAL);
